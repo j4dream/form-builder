@@ -2,13 +2,13 @@
   <div class="container">
     <el-row :gutter="20">
       <el-col :span="16">
-        <div class="page-view" @dragover.prevent @drop="drop">
+        <div class="page-view" @dragover.prevent @drop="dropBlank">
           <el-row v-for="item in json.keys">
-            <template v-for="col in json[item]">
+            <template v-for="(col, index) in json[item]">
               <el-col :span="col.span">
-                <div v-if="col.type == 'image'"><img :src="col.background" width="100%"></div>
+                <div v-if="col.type == 'image'"><img :src="col.url" width="100%"></div>
                 <div v-if="col.type == 'text'"><p>{{col.text}}</p></div>
-                <div v-if="col.type == 'blank'" class="bg-purple">请选择类型</div>
+                <div v-if="col.type == 'blank'" :data-key="item" :data-col="index" @dragover.prevent @drop="dropContent" class="bg-purple">请选择类型</div>
               </el-col>
             </template>
           </el-row>
@@ -18,9 +18,11 @@
         <div>
           <el-tabs class="full-w" type="border-card">
             <el-tab-pane label="结构">
-              <blank-col></blank-col>
+              <col-types></col-types>
             </el-tab-pane>
-            <el-tab-pane label="内容">内容</el-tab-pane>
+            <el-tab-pane label="内容">
+              <col-types type="contents"></col-types>
+            </el-tab-pane>
             <el-tab-pane label="自定义">自定义</el-tab-pane>
           </el-tabs>
         </div>
@@ -30,20 +32,28 @@
 </template>
 
 <script>
-import BlankCol from './editor/BlankCol'
+import ColTypes from './editor/ColTypes'
 
 export default {
   components: {
-    BlankCol
+    ColTypes
   },
   methods: {
-    drop (e) {
-      console.log('drop: ', e)
+    dropBlank (e) {
+      var identify = Date.now()
+      this.$set(this.json, identify, this._getDTData(e))
+      this.json.keys.push(identify)
+    },
+    dropContent (e) {
+      e.stopPropagation()
+      let { key, col } = e.currentTarget.dataset
+      // var data = dt.getData(e)
+      this.json[key][col] = Object.assign(this.json[key][col], this._getDTData(e))
+    },
+    _getDTData (e) {
       var dt = e.dataTransfer
       var node = dt.getData('type')
-      var identify = Date.now().toString()
-      this.json[identify] = JSON.parse(node)
-      this.json.keys.push(identify)
+      return JSON.parse(node)
     }
   },
   data () {
@@ -67,7 +77,7 @@ export default {
         header: [{
           span: 24,
           type: 'image',
-          background: 'https://unsplash.it/725/300/?random'
+          url: 'https://unsplash.it/725/300/?random'
         }],
         keys: ['header', 'row1', 'row2']
       }

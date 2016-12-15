@@ -7,13 +7,21 @@
 </template>
 
 <script>
-import premake from './premake'
+import structure from './structure'
+import contents from './contents'
 
 export default {
+  props: ['type'],
   data () {
+    if (this.type === 'contents') {
+      return {
+        keys: Object.keys(contents),
+        data: contents
+      }
+    }
     return {
-      keys: Object.keys(premake),
-      data: premake
+      keys: Object.keys(structure),
+      data: structure
     }
   },
   methods: {
