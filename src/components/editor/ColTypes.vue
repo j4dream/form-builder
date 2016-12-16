@@ -1,7 +1,14 @@
 <template>
   <div>
     <div v-for="k in keys">
-      <div @dragstart="onDragStart" class="drag-item" :data-k="k" draggable="true">{{ k }}</div>
+      <div
+        @dragstart="onDragStart"
+        class="drag-item" 
+        :data-k="k"
+        draggable="true"
+      >
+        <i :class="icon[k]"></i>
+      </div>
     </div>
   </div>
 </template>
@@ -9,6 +16,7 @@
 <script>
 import structure from './structure'
 import contents from './contents'
+import iconMap from './iconMap'
 
 export default {
   props: ['type'],
@@ -16,12 +24,14 @@ export default {
     if (this.type === 'contents') {
       return {
         keys: Object.keys(contents),
-        data: contents
+        data: contents,
+        icon: iconMap
       }
     }
     return {
       keys: Object.keys(structure),
-      data: structure
+      data: structure,
+      icon: iconMap
     }
   },
   methods: {
@@ -32,3 +42,14 @@ export default {
   }
 }
 </script>
+
+<style>
+.drag-item {
+  height: 50px;
+  font-size: 40px;
+  border: 1px solid #D3DCE6;
+  background: white;
+  border-radius: 3px;
+  margin-bottom: 8px;
+}
+</style>

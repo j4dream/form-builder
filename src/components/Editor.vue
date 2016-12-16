@@ -3,12 +3,14 @@
     <el-row :gutter="20">
       <el-col :span="16">
         <div class="page-view" @dragover.prevent @drop="dropBlank">
-          <el-row v-for="item in json.keys">
-            <template v-for="(col, index) in json[item]">
+          <el-row v-for="key in json.keys">
+            <template v-for="(col, index) in json[key]">
               <el-col :span="col.span">
-                <div v-if="col.type == 'image'"><img :src="col.url" width="100%"></div>
-                <div v-if="col.type == 'text'"><p>{{col.text}}</p></div>
-                <div v-if="col.type == 'blank'" :data-key="item" :data-col="index" @dragover.prevent @drop="dropContent" class="bg-purple">请选择类型</div>
+                <div :data-col="index" :data-key="key" @click="selectItem">
+                  <div v-if="col.type == 'image'"><img :src="col.url" width="100%"></div>
+                  <div v-if="col.type == 'text'"><p>{{col.text}}</p></div>
+                  <div v-if="col.type == 'blank'" :data-key="key" :data-col="index" @dragover.prevent @drop="dropContent" class="bg-purple">请选择类型</div>
+                </div>
               </el-col>
             </template>
           </el-row>
@@ -23,7 +25,9 @@
             <el-tab-pane label="内容">
               <col-types type="contents"></col-types>
             </el-tab-pane>
-            <el-tab-pane label="自定义">自定义</el-tab-pane>
+            <el-tab-pane label="属性">
+
+            </el-tab-pane>
           </el-tabs>
         </div>
       </el-col>
@@ -40,15 +44,20 @@ export default {
   },
   methods: {
     dropBlank (e) {
-      var identify = Date.now()
+      let identify = Date.now()
       this.$set(this.json, identify, this._getDTData(e))
       this.json.keys.push(identify)
     },
     dropContent (e) {
       e.stopPropagation()
       let { key, col } = e.currentTarget.dataset
-      // var data = dt.getData(e)
       this.json[key][col] = Object.assign(this.json[key][col], this._getDTData(e))
+    },
+    selectItem (e) {
+      // e.stopPropagation()
+      let { col, key } = e.currentTarget.dataset
+      var cdata = this.json[key][col]
+      console.log(cdata)
     },
     _getDTData (e) {
       var dt = e.dataTransfer
@@ -58,6 +67,7 @@ export default {
   },
   data () {
     return {
+      editing: null,
       json: {
         row1: [
           {
