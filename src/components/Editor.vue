@@ -26,7 +26,9 @@
               <col-types type="contents"></col-types>
             </el-tab-pane>
             <el-tab-pane label="属性">
-
+              {{ $store.state.count }}
+              <button @click="increment"> increment </button>
+              <button @click="decrement"> decrement </button>
             </el-tab-pane>
           </el-tabs>
         </div>
@@ -36,6 +38,7 @@
 </template>
 
 <script>
+import { mapMutations, mapState } from 'vuex'
 import ColTypes from './editor/ColTypes'
 
 export default {
@@ -43,15 +46,17 @@ export default {
     ColTypes
   },
   methods: {
+    ...mapMutations([
+      'increment',
+      'decrement'
+    ]),
     dropBlank (e) {
-      let identify = Date.now()
-      this.$set(this.json, identify, this._getDTData(e))
-      this.json.keys.push(identify)
+      this.$store.commit('addRow', { data: this._getDTData(e) })
     },
     dropContent (e) {
       e.stopPropagation()
       let { key, col } = e.currentTarget.dataset
-      this.json[key][col] = Object.assign(this.json[key][col], this._getDTData(e))
+      this.$store.commit('updateCol', { key, col, data: this._getDTData(e) })
     },
     selectItem (e) {
       // e.stopPropagation()
@@ -65,34 +70,10 @@ export default {
       return JSON.parse(node)
     }
   },
-  data () {
-    return {
-      editing: null,
-      json: {
-        row1: [
-          {
-            span: 10,
-            type: 'blank'
-          },
-          {
-            span: 14,
-            type: 'blank'
-          }
-        ],
-        row2: [{
-          span: 24,
-          type: 'text',
-          text: '初始化'
-        }],
-        header: [{
-          span: 24,
-          type: 'image',
-          url: 'https://unsplash.it/725/300/?random'
-        }],
-        keys: ['header', 'row1', 'row2']
-      }
-    }
-  }
+  computed: mapState({
+    json: state => state.json,
+    count: state => state.count
+  })
 }
 </script>
 
