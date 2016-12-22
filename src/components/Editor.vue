@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex'
+import { mapState } from 'vuex'
 import ColTypes from './editor/ColTypes'
 import Propertys from './editor/Propertys'
 
