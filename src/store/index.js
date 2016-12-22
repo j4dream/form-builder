@@ -27,7 +27,8 @@ const state = {
       url: 'https://unsplash.it/725/300/?random'
     }],
     keys: ['header', 'row1', 'row2']
-  }
+  },
+  editing: {}
 }
 
 const mutations = {
@@ -44,6 +45,9 @@ const mutations = {
   },
   updateCol (state, { key, col, data }) {
     Object.assign(state.json[key][col], data)
+  },
+  editingCol (state, { key, col }) {
+    state.editing = Object.assign({key, col}, state.json[key][col])
   }
 }
 

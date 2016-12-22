@@ -26,9 +26,7 @@
               <col-types type="contents"></col-types>
             </el-tab-pane>
             <el-tab-pane label="属性">
-              {{ $store.state.count }}
-              <button @click="increment"> increment </button>
-              <button @click="decrement"> decrement </button>
+              <propertys :type="editing.type"></propertys>
             </el-tab-pane>
           </el-tabs>
         </div>
@@ -40,16 +38,14 @@
 <script>
 import { mapMutations, mapState } from 'vuex'
 import ColTypes from './editor/ColTypes'
+import Propertys from './editor/Propertys'
 
 export default {
   components: {
-    ColTypes
+    ColTypes,
+    Propertys
   },
   methods: {
-    ...mapMutations([
-      'increment',
-      'decrement'
-    ]),
     dropBlank (e) {
       this.$store.commit('addRow', { data: this._getDTData(e) })
     },
@@ -59,10 +55,9 @@ export default {
       this.$store.commit('updateCol', { key, col, data: this._getDTData(e) })
     },
     selectItem (e) {
-      // e.stopPropagation()
+      e.stopPropagation()
       let { col, key } = e.currentTarget.dataset
-      var cdata = this.json[key][col]
-      console.log(cdata)
+      this.$store.commit('editingCol', { key, col, type: this.json[key][col].type })
     },
     _getDTData (e) {
       var dt = e.dataTransfer
@@ -72,7 +67,7 @@ export default {
   },
   computed: mapState({
     json: state => state.json,
-    count: state => state.count
+    editing: state => state.editing
   })
 }
 </script>
